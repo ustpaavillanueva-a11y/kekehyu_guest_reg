@@ -1,6 +1,16 @@
-import { Routes } from '@angular/router';
+import { Routes, CanMatchFn } from '@angular/router';
+import { inject } from '@angular/core';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { AuthService } from './core/services/auth.service';
+import { UserRole } from './core/models';
+
+function roleMatch(...roles: UserRole[]): CanMatchFn {
+  return () => {
+    const auth = inject(AuthService);
+    return auth.hasRole(...roles);
+  };
+}
 
 export const routes: Routes = [
   // Auth layout (no sidebar)
@@ -15,52 +25,62 @@ export const routes: Routes = [
     ],
   },
 
-  // Main layout (with sidebar)
+  // Front Desk layout (no sidebar) - Front Desk only
   {
     path: '',
     canActivate: [authGuard],
+    canMatch: [roleMatch('front_desk')],
+    loadComponent: () =>
+      import('./layouts/front-desk-layout/front-desk-layout.component').then((m) => m.FrontDeskLayoutComponent),
+    children: [
+      {
+        path: 'guest-registration',
+        loadComponent: () =>
+          import('./features/front-desk/guest-registration/guest-registration.component').then((m) => m.GuestRegistrationComponent),
+      },
+      {
+        path: 'my-registrations',
+        loadComponent: () =>
+          import('./features/front-desk/my-registrations/my-registrations.component').then((m) => m.MyRegistrationsComponent),
+      },
+    ],
+  },
+
+  // Main layout (with sidebar) - Admin & Super Admin
+  {
+    path: '',
+    canActivate: [authGuard],
+    canMatch: [roleMatch('admin', 'super_admin')],
     loadComponent: () =>
       import('./layouts/main-layout/main-layout.component').then((m) => m.MainLayoutComponent),
     children: [
-      // Dashboard - Admin & Super Admin
+      // Dashboard
       {
         path: 'dashboard',
-        canActivate: [roleGuard('admin', 'super_admin')],
         loadComponent: () => import('./features/admin/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
 
-      // Guest Registration - Front Desk & Super Admin
+      // Guest Registration - Super Admin
       {
         path: 'guest-registration',
-        canActivate: [roleGuard('front_desk', 'super_admin')],
+        canActivate: [roleGuard('super_admin')],
         loadComponent: () =>
           import('./features/front-desk/guest-registration/guest-registration.component').then((m) => m.GuestRegistrationComponent),
       },
 
-      // My Registrations - Front Desk
-      {
-        path: 'my-registrations',
-        canActivate: [roleGuard('front_desk')],
-        loadComponent: () =>
-          import('./features/front-desk/my-registrations/my-registrations.component').then((m) => m.MyRegistrationsComponent),
-      },
-
-      // Guest List - Admin & Super Admin
+      // Guest List
       {
         path: 'guests',
-        canActivate: [roleGuard('admin', 'super_admin')],
         loadComponent: () => import('./features/admin/guest-list/guest-list.component').then((m) => m.GuestListComponent),
       },
       {
         path: 'guests/:period',
-        canActivate: [roleGuard('admin', 'super_admin')],
         loadComponent: () => import('./features/admin/guest-list/guest-list.component').then((m) => m.GuestListComponent),
       },
 
-      // Front Desk Activity - Admin & Super Admin
+      // Front Desk Activity
       {
         path: 'activity/:period',
-        canActivate: [roleGuard('admin', 'super_admin')],
         loadComponent: () =>
           import('./features/admin/front-desk-activity/front-desk-activity.component').then((m) => m.FrontDeskActivityComponent),
       },

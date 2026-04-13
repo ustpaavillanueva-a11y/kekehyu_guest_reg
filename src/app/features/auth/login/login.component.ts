@@ -168,9 +168,9 @@ export class LoginComponent {
     this.errorMessage.set('');
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: (res) => {
+      next: () => {
         this.loading.set(false);
-        this.router.navigate([res.redirectPath]);
+        this.router.navigate([this.authService.getRedirectPath()]);
       },
       error: (err) => {
         this.loading.set(false);
