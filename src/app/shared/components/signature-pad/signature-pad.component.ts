@@ -13,39 +13,78 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-signature-pad',
   imports: [MatButtonModule, MatIconModule],
   template: `
-    <div class="signature-container">
-      <canvas #canvas class="signature-canvas"></canvas>
-      <button mat-stroked-button type="button" (click)="clear()">
-        <mat-icon>clear</mat-icon> Clear
-      </button>
+    <div class="signature-wrapper" [class.has-signature]="hasSigned">
+      <div class="canvas-area">
+        <canvas #canvas class="signature-canvas"></canvas>
+        @if (!hasSigned) {
+          <div class="placeholder">
+            <mat-icon>draw</mat-icon>
+            <span>Sign here</span>
+          </div>
+        }
+      </div>
+      <div class="sig-actions">
+        <button mat-stroked-button type="button" (click)="clear()" [disabled]="!hasSigned">
+          <mat-icon>refresh</mat-icon> Clear
+        </button>
+      </div>
     </div>
   `,
   styles: `
-    .signature-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .signature-canvas {
+    .signature-wrapper {
       border: 2px dashed #ccc;
-      border-radius: 8px;
-      cursor: crosshair;
+      border-radius: 12px;
+      background: #fafafa;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .signature-wrapper.has-signature {
+      border-color: #28a745;
+      border-style: solid;
+    }
+    .canvas-area {
+      position: relative;
+    }
+    .signature-canvas {
+      display: block;
       width: 100%;
-      max-width: 500px;
-      height: 150px;
+      height: 180px;
+      cursor: crosshair;
       background: white;
       touch-action: none;
     }
-
-    button {
-      align-self: flex-start;
+    .placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #aaa;
+      font-size: 15px;
+      pointer-events: none;
+    }
+    .placeholder mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+    .sig-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 12px;
+      background: #f5f5f5;
+      border-top: 1px solid #eee;
     }
   `,
 })
 export class SignaturePadComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   signatureChange = output<string>();
+  hasSigned = false;
 
   private ctx!: CanvasRenderingContext2D;
   private drawing = false;
@@ -77,6 +116,7 @@ export class SignaturePadComponent implements AfterViewInit, OnDestroy {
 
     const onPointerUp = () => {
       this.drawing = false;
+      this.hasSigned = true;
       this.emitSignature();
     };
 
@@ -100,6 +140,7 @@ export class SignaturePadComponent implements AfterViewInit, OnDestroy {
   clear(): void {
     const canvas = this.canvasRef.nativeElement;
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.hasSigned = false;
     this.signatureChange.emit('');
   }
 

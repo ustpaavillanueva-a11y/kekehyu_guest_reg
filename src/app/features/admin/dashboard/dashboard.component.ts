@@ -37,7 +37,7 @@ import { GuestStatistics, Guest } from '../../../core/models';
         <table mat-table [dataSource]="recentGuests()" class="full-width">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Guest Name</th>
-            <td mat-cell *matCellDef="let guest">{{ guest.name }}</td>
+            <td mat-cell *matCellDef="let guest">{{ guest.lastName }}, {{ guest.firstName }}</td>
           </ng-container>
 
           <ng-container matColumnDef="phone">

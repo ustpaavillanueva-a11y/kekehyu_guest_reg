@@ -1,47 +1,125 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-front-desk-layout',
-  imports: [RouterOutlet, MatToolbarModule, MatButtonModule, MatIconModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatIconModule, MatTooltipModule],
   template: `
-    <mat-toolbar color="primary" class="toolbar">
-      <span class="hotel-name">Kekehyu Hotel</span>
-      <span class="spacer"></span>
-      <span class="user-name">{{ userName() }}</span>
-      <button mat-icon-button (click)="authService.logout()" matTooltip="Logout">
-        <mat-icon>logout</mat-icon>
-      </button>
+    <mat-toolbar class="toolbar">
+      <div class="toolbar-left">
+        <mat-icon class="logo-icon">hotel</mat-icon>
+        <span class="hotel-name">Kekehyu Hotel</span>
+      </div>
+
+      <nav class="toolbar-nav">
+        <a mat-button routerLink="/guest-registration" routerLinkActive="active-link">
+          <mat-icon>edit_note</mat-icon> Register Guest
+        </a>
+        <a mat-button routerLink="/my-registrations" routerLinkActive="active-link">
+          <mat-icon>list_alt</mat-icon> My Registrations
+        </a>
+      </nav>
+
+      <div class="toolbar-right">
+        <div class="user-badge">
+          <mat-icon>account_circle</mat-icon>
+          <span class="user-name">{{ userName() }}</span>
+        </div>
+        <button mat-icon-button (click)="authService.logout()" matTooltip="Sign out">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
     </mat-toolbar>
+
     <main class="content">
       <router-outlet />
     </main>
   `,
   styles: `
     .toolbar {
-      background: #1a1a2e;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       color: white;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      opacity: 0.9;
     }
     .hotel-name {
-      font-weight: 600;
+      font-weight: 700;
       font-size: 18px;
+      letter-spacing: 0.3px;
     }
-    .spacer {
-      flex: 1;
+    .toolbar-nav {
+      display: flex;
+      gap: 4px;
+    }
+    .toolbar-nav a {
+      color: rgba(255,255,255,0.75);
+      border-radius: 8px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .toolbar-nav a:hover {
+      color: white;
+      background: rgba(255,255,255,0.1);
+    }
+    .toolbar-nav .active-link {
+      color: white;
+      background: rgba(255,255,255,0.15);
+    }
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .user-badge mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      opacity: 0.8;
     }
     .user-name {
-      margin-right: 8px;
-      font-size: 14px;
       opacity: 0.9;
     }
     .content {
-      padding: 24px;
-      background: #f5f5f5;
-      min-height: calc(100vh - 64px);
+      padding: 28px 32px;
+      background: #f0f2f5;
+      min-height: calc(100vh - 60px);
+    }
+    @media (max-width: 768px) {
+      .hotel-name { display: none; }
+      .user-name { display: none; }
+      .content { padding: 16px; }
     }
   `,
 })

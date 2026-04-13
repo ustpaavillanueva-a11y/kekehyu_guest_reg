@@ -43,6 +43,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/front-desk/my-registrations/my-registrations.component').then((m) => m.MyRegistrationsComponent),
       },
+      {
+        path: 'registration/:id',
+        loadComponent: () =>
+          import('./features/front-desk/registration-pdf/registration-pdf.component').then((m) => m.RegistrationPdfComponent),
+      },
     ],
   },
 
@@ -66,6 +71,13 @@ export const routes: Routes = [
         canActivate: [roleGuard('super_admin')],
         loadComponent: () =>
           import('./features/front-desk/guest-registration/guest-registration.component').then((m) => m.GuestRegistrationComponent),
+      },
+
+      // Registration PDF View
+      {
+        path: 'registration/:id',
+        loadComponent: () =>
+          import('./features/front-desk/registration-pdf/registration-pdf.component').then((m) => m.RegistrationPdfComponent),
       },
 
       // Guest List

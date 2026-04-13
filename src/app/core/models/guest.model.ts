@@ -3,7 +3,9 @@ import { RoomType } from './room-type.model';
 
 export interface Guest {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   phoneNumber?: string;
   email?: string;
   country?: string;
@@ -11,6 +13,7 @@ export interface Guest {
   vehiclePlateNo?: string;
   createdAt: Date;
   updatedAt: Date;
+  registeredById: string;
   registeredBy: User;
   reservations: Reservation[];
   agreement: GuestAgreement;
@@ -31,9 +34,13 @@ export interface Reservation {
 
 export interface AccompanyingGuest {
   id: string;
-  name: string;
+  reservationId: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   validIdPresented: boolean;
   signature?: string;
+  createdAt: Date;
 }
 
 export interface GuestAgreement {
@@ -59,7 +66,9 @@ export interface GuestAgreement {
 }
 
 export interface CreateGuestRequest {
-  name: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   phoneNumber?: string;
   email?: string;
   country?: string;
@@ -70,7 +79,6 @@ export interface CreateGuestRequest {
 }
 
 export interface CreateReservationRequest {
-  reservationNumber: string;
   roomNumber: string;
   roomTypeId: string;
   checkInDate: string;
@@ -81,7 +89,9 @@ export interface CreateReservationRequest {
 }
 
 export interface CreateAccompanyingGuestRequest {
-  name: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
   validIdPresented: boolean;
   signature?: string;
 }

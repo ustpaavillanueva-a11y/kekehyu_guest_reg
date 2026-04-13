@@ -47,7 +47,7 @@ import { Guest } from '../../../core/models';
         <table mat-table [dataSource]="filteredGuests()" class="full-width">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let guest">{{ guest.name }}</td>
+            <td mat-cell *matCellDef="let guest">{{ guest.lastName }}, {{ guest.firstName }} {{ guest.middleName }}</td>
           </ng-container>
 
           <ng-container matColumnDef="phone">
@@ -134,7 +134,9 @@ export class GuestListComponent implements OnInit {
     this.filteredGuests.set(
       this.allGuests().filter(
         (g) =>
-          g.name.toLowerCase().includes(term) ||
+          g.firstName.toLowerCase().includes(term) ||
+          g.lastName.toLowerCase().includes(term) ||
+          (g.middleName?.toLowerCase().includes(term) ?? false) ||
           (g.phoneNumber?.toLowerCase().includes(term) ?? false) ||
           (g.email?.toLowerCase().includes(term) ?? false)
       )
@@ -150,7 +152,7 @@ export class GuestListComponent implements OnInit {
   }
 
   deleteGuest(guest: Guest): void {
-    if (!confirm(`Delete guest "${guest.name}"?`)) return;
+    if (!confirm(`Delete guest "${guest.lastName}, ${guest.firstName}"?`)) return;
 
     this.guestService.delete(guest.id).subscribe({
       next: () => {

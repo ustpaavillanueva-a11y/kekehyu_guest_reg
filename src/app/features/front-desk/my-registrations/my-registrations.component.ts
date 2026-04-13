@@ -19,7 +19,7 @@ import { Guest } from '../../../core/models';
         <table mat-table [dataSource]="guests()" class="full-width">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Guest Name</th>
-            <td mat-cell *matCellDef="let g">{{ g.name }}</td>
+            <td mat-cell *matCellDef="let g">{{ g.lastName }}, {{ g.firstName }}</td>
           </ng-container>
 
           <ng-container matColumnDef="phone">
